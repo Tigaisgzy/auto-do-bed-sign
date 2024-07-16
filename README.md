@@ -2,7 +2,6 @@
 >[doSignIn AND goToBed](#dosignin-and-gotobed)
 
 # auto-do-bed-sign
-
 # doSignIn AND goToBed
 
     doSignIn是签到
