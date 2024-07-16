@@ -1,9 +1,9 @@
 >
->[doSignIn AND goToBed](#dosignin-and-gotobed)
+>**[doSignIn AND goToBed](#dosignin-and-gotobed)**
 
 # auto-do-bed-sign
-# doSignIn AND goToBed
 
+    对于不需要的时间段，可直接注释掉对应的yaml文件
     doSignIn是签到
     gotobed是查寝
     定时任务时间要修改在 .github/workflows/doSignIn.yaml 或 gotobed.yaml中修改
@@ -27,15 +27,15 @@
 ## 具体教程:
 
 1. 先fork仓库
-   ![img.png](../auto-do-bed-sign/gzlg助手/img/img4.png)
+   ![img.png](gzlg助手/img/img4.png)
 2. 在仓库的Settings --> Secrets中配置变量
-   ![img_1.png](../auto-do-bed-sign/gzlg助手/img/img_1.png)
-   ![img_2.png](../auto-do-bed-sign/gzlg助手/img/img_2.png)
+   ![img_1.png](gzlg助手/img/img_1.png)
+   ![img_2.png](gzlg助手/img/img_2.png)
 3. 配置定时任务
 
 4. 配置成功后，在仓库的Actions中查看运行情况
 
 5. 效果图
 
-![img.png](../auto-do-bed-sign/gzlg助手/img/img5.png)
-![img.png](../auto-do-bed-sign/gzlg助手/img/img6.png)
+![img.png](gzlg助手/img/img5.png)
+![img.png](gzlg助手/img/img6.png)
