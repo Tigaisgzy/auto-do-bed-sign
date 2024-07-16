@@ -18,7 +18,7 @@
     EMAIL_ADDRESS # 结果发送邮箱地址
     TOKEN # 打码平台密钥
 
-![img.png](../auto-do-bed-sign/gzlg助手/img/img.png)
+![img.png](gzlg助手/img/img.png)
 
 ## 自动打码 注册地址 免费300积分
 
