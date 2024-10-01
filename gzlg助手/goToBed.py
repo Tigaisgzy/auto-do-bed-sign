@@ -44,19 +44,21 @@ def getCode(image):
 
 def login(session):
     params = {'uid': ''}
-    yzm_url = 'https://ids.gzist.edu.cn/lyuapServer/kaptcha'
-    response = session.get(yzm_url, params=params)
-    uid = response.json()['uid']
-    yzm_base64 = re.search('base64,(.*)', response.json()['content']).group(1)
-    yzm = getCode(yzm_base64)
+    # yzm_url = 'https://ids.gzist.edu.cn/lyuapServer/kaptcha'
+    # response = session.get(yzm_url, params=params)
+    # uid = response.json()['uid']
+    # yzm_base64 = re.search('base64,(.*)', response.json()['content']).group(1)
+    # yzm = getCode(yzm_base64)
     psw = ctx.call('G5116', os.getenv('USERNAME'), os.getenv('PASSWORD'), '')
     data = {
         'username': os.getenv('USERNAME'),
         'password': str(psw),
         'service': 'https://xsfw.gzist.edu.cn/xsfw/sys/swmzncqapp/*default/index.do',
         'loginType': '',
-        'id': uid,
-        'code': str(yzm),
+        'id': '',
+        # 'id': uid,
+        'code': ''
+        # 'code': str(yzm),
     }
     response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
     if 'NOUSER' in response.json():
