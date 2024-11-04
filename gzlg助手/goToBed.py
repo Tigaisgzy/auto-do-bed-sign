@@ -61,6 +61,11 @@ def login(session):
         'code': str(yzm),
     }
     response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
+    # 判断是否要进行手动验证
+    if response.json()['data']['code'] == 'TWOVERIFY':
+        result = '需要手动验证,请先登陆教务系统进行手机号验证后再执行脚本'
+        send_QQ_email_plain(result)
+        sys.exit(1)
     if 'NOUSER' in response.json():
         # logging.error('登录异常')
         result = '账号不存在'
