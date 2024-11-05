@@ -84,8 +84,8 @@ def login(session):
         session.headers['vcodes'] = vcodes
         json_data = {
             'userName': '20220407430746',
-            'principal': os.getenv('q'),
-            'credential': os.getenv('a'),
+            'principal': os.getenv('Q'),
+            'credential': os.getenv('A'),
             'type': '2',
             'service': 'https://xsfw.gzist.edu.cn/xsfw/sys/swmzncqapp/*default/index.do',
             'loginType': '',
