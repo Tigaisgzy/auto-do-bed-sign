@@ -60,12 +60,8 @@ def login(session):
         # 'code': ''
         'code': str(yzm),
     }
+    # 一次登陆
     response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
-    # 判断是否要进行手动验证
-    if response.json()['data']['code'] == 'TWOVERIFY':
-        result = '需要手动验证,请先登陆教务系统进行手机号验证后再执行脚本'
-        send_QQ_email_plain(result)
-        sys.exit(1)
     if 'NOUSER' in response.json():
         # logging.error('登录异常')
         result = '账号不存在'
@@ -81,6 +77,26 @@ def login(session):
         result = '验证码错误'
         send_QQ_email_plain(result)
         sys.exit(1)
+    # 判断登录是否需要二次验证
+    if response.json()['data']['code'] == 'TWOVERIFY':
+        # 需要二次验证
+        vcodes = response.json()['data']['uid']
+        session.headers['vcodes'] = vcodes
+        json_data = {
+            'userName': '20220407430746',
+            'principal': '一加一',
+            'credential': '等于三',
+            'type': '2',
+            'service': 'https://xsfw.gzist.edu.cn/xsfw/sys/swmzncqapp/*default/index.do',
+            'loginType': '',
+            'isCommonIP': '',
+        }
+        session.post('https://ids.gzist.edu.cn/lyuapServer/login/twoVertify', headers=session.headers,
+                                json=json_data)
+        # 二次登陆
+        response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
+        return response.json()['ticket']
+    # 登录成功
     else:
         # logging.log(logging.INFO, '登录成功')
         return response.json()['ticket']
