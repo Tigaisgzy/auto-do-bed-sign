@@ -78,21 +78,21 @@ def login(session):
         send_QQ_email_plain(result)
         sys.exit(1)
     # 判断登录是否需要二次验证
-    if response.json()['data']['code'] == 'TWOVERIFY':
+    if 'data' in response.json() and response.json()['data']['code'] == 'TWOVERIFY':
         # 需要二次验证
         vcodes = response.json()['data']['uid']
         session.headers['vcodes'] = vcodes
         json_data = {
             'userName': '20220407430746',
-            'principal': os.getenv('Q'),
-            'credential': os.getenv('A'),
+            'principal': os.getenv('PRINCIPAL'),
+            'credential': os.getenv('CREDENTIAL'),
             'type': '2',
             'service': 'https://xsfw.gzist.edu.cn/xsfw/sys/swmzncqapp/*default/index.do',
             'loginType': '',
             'isCommonIP': '',
         }
         session.post('https://ids.gzist.edu.cn/lyuapServer/login/twoVertify', headers=session.headers,
-                                json=json_data)
+                     json=json_data)
         # 二次登陆
         response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
         return response.json()['ticket']
