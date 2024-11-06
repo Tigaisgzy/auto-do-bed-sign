@@ -17,6 +17,9 @@
     PASSWORD # 上面学工平台的密码
     EMAIL_ADDRESS # 结果发送邮箱地址
     TOKEN # 打码平台密钥
+    # 出现二次验证的情况需要配置以下两个变量 在学工系统--》安全中心--》密保
+    PRINCIPAL # 密保问题
+    CREDENTIAL # 密保答案
 
 ![img.png](gzlg助手/img/img.png)
 
