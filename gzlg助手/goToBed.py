@@ -83,7 +83,7 @@ def login(session):
         vcodes = response.json()['data']['uid']
         session.headers['vcodes'] = vcodes
         json_data = {
-            'userName': '20220407430746',
+            'userName': str(os.getenv('USERNAME')),
             'principal': os.getenv('PRINCIPAL'),
             'credential': os.getenv('CREDENTIAL'),
             'type': '2',
