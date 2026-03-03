@@ -20,8 +20,8 @@ def get_beijing_time():
 
 
 def send_QQ_email_plain(content):
-    sender = user = '1781259604@qq.com'
-    passwd = 'tffenmnkqsveccdj'
+    sender = user = 'zhangweiluo2005@qq.com'
+    passwd = 'mlqabdckjdfvbadj'
 
     # 格式化北京时间为 "年-月-日 星期几 时:分" 格式
     formatted_date = get_beijing_time()
@@ -29,11 +29,14 @@ def send_QQ_email_plain(content):
     # 纯文本内容
     msg = MIMEText(f'签到结果：{content}', 'plain', 'utf-8')
 
-    # 设置邮件主题为今天的日期和星期
+    # 判断签到结果是否成功
+    result_status = "✅成功" if "成功" in content else "❌失败"
+    
+    # 设置邮件主题为今天的日期和星期以及签到结果状态
     msg['From'] = f'{sender}'
     msg['To'] = os.getenv('EMAIL_ADDRESS')
     # msg['To'] = '3552971348@qq.com'
-    msg['Subject'] = f'{formatted_date}'  # 设置邮件主题
+    msg['Subject'] = f'查寝 {result_status} {formatted_date}'  # 设置邮件主题
 
     try:
         # 建立 SMTP 、SSL 的连接，连接发送方的邮箱服务器

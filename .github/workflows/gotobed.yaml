@@ -9,8 +9,8 @@ name: gotobed
 
 on:
  workflow_dispatch:  # 允许手动触发
- schedule: # 每晚上十点执行 时差为 +8
-   - cron: '0 14 * * *'
+ schedule: # 每晚上九点半执行 时差为 +8
+   - cron: '30 13 * * *'
 
 
 jobs:
@@ -34,6 +34,8 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           TOKEN: ${{ secrets.TOKEN }}
+          PRINCIPAL: ${{ secrets.PRINCIPAL }}
+          CREDENTIAL: ${{ secrets.CREDENTIAL }}
         run: |
           python gzlg助手/goToBed.py || echo "Script failed with exit code $?"
         

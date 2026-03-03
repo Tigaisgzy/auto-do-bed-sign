@@ -27,7 +27,7 @@ def init():
 
 def getCode(image):
     # 自动打码 注册地址 免费300积分
-    # https://console.jfbym.com/register/TG66434
+    # https://console.jfbym.com/register
     url = "http://api.jfbym.com/api/YmServer/customApi"
     payload = {
         "image": image,
@@ -39,7 +39,9 @@ def getCode(image):
     result = result.replace('o', '0').replace('l', '1').replace('O', '0').replace('十', '+').replace('三', '')
     # logging.log(logging.INFO, '验证码识别结果：' + result[:-1])
     print('验证码识别结果：' + result[:-1])
-    return eval(result[:-1])
+    ans = eval(result[:-1])
+    print('计算结果：', ans)
+    return ans
 
 
 def login(session):
@@ -47,36 +49,54 @@ def login(session):
     yzm_url = 'https://ids.gzist.edu.cn/lyuapServer/kaptcha'
     response = session.get(yzm_url, params=params)
     uid = response.json()['uid']
-    yzm_base64 = re.search('base64,(.*)', response.json()['content']).group(1)
-    yzm = getCode(yzm_base64)
+
+    # 检查是否存在验证码
+    yzm = None
+    if 'content' in response.json() and response.json()['content']:
+        # 存在验证码内容，尝试提取验证码
+        yzm_match = re.search('base64,(.*)', response.json()['content'])
+        if yzm_match:
+            yzm_base64 = yzm_match.group(1)
+            yzm = getCode(yzm_base64)
+            print('验证码：', yzm)
+
     psw = ctx.call('G5116', os.getenv('USERNAME'), os.getenv('PASSWORD'), '')
     data = {
         'username': os.getenv('USERNAME'),
         'password': str(psw),
         'service': 'https://xsfw.gzist.edu.cn/xsfw/sys/swmzncqapp/*default/index.do',
         'loginType': '',
-        # 'id': '',
         'id': uid,
-        # 'code': ''
-        'code': str(yzm),
     }
+    
+    # 只有在验证码存在时才添加code参数
+    if yzm is not None:
+        data['code'] = str(yzm)
+
     # 一次登陆
     response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
-    if 'NOUSER' in response.json():
+    login_response = response.json()
+    if 'NOUSER' in login_response:
         # logging.error('登录异常')
+        print("登录失败，响应内容：", login_response)
         result = '账号不存在'
         send_QQ_email_plain(result)
         sys.exit(1)
-    elif 'PASSERROR' in response.json():
+    elif 'PASSERROR' in login_response:
         # logging.error('登录异常')
+        print("登录失败，响应内容：", login_response)
         result = '密码错误'
         send_QQ_email_plain(result)
         sys.exit(1)
-    elif 'CODEFALSE' in response.json():
+    elif 'CODEFALSE' in login_response:
         # logging.error('登录异常')
+        print("登录失败，响应内容：", login_response)
         result = '验证码错误'
         send_QQ_email_plain(result)
         sys.exit(1)
+    else:
+        print("登录响应：", login_response)
+
     # 判断登录是否需要二次验证
     if 'data' in response.json() and response.json()['data']['code'] == 'TWOVERIFY':
         # 需要二次验证
@@ -91,8 +111,9 @@ def login(session):
             'loginType': '',
             'isCommonIP': '',
         }
-        session.post('https://ids.gzist.edu.cn/lyuapServer/login/twoVertify', headers=session.headers,
+        res = session.post('https://ids.gzist.edu.cn/lyuapServer/login/twoVertify', headers=session.headers,
                      json=json_data)
+        print("二次验证响应：", res.json())
         # 二次登陆
         response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
         return response.json()['ticket']
