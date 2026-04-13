@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time : 28/4/2024 下午8:33
-# @Author : G5116
-import re, execjs, json, requests, os, sys
+import base64, re, execjs, json, requests, os, sys, ddddocr
 from datetime import datetime
+
 # 获取当前文件的目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # 获取项目根目录
@@ -26,18 +25,10 @@ def init():
 
 
 def getCode(image):
-    # 自动打码 注册地址 免费300积分
-    # https://console.jfbym.com/register
-    url = "http://api.jfbym.com/api/YmServer/customApi"
-    payload = {
-        "image": image,
-        "token": str(os.getenv('TOKEN')),
-        "type": "10110"
-    }
-    resp = requests.post(url, headers={'Content-Type': 'application/json'}, data=json.dumps(payload))
-    result = resp.json()["data"]["data"]
+    ocr = ddddocr.DdddOcr(show_ad=False)
+    image_bytes = base64.b64decode(image)
+    result = ocr.classification(image_bytes)
     result = result.replace('o', '0').replace('l', '1').replace('O', '0').replace('十', '+').replace('三', '')
-    # logging.log(logging.INFO, '验证码识别结果：' + result[:-1])
     print('验证码识别结果：' + result[:-1])
     ans = eval(result[:-1])
     print('计算结果：', ans)
@@ -68,7 +59,7 @@ def login(session):
         'loginType': '',
         'id': uid,
     }
-    
+
     # 只有在验证码存在时才添加code参数
     if yzm is not None:
         data['code'] = str(yzm)
@@ -112,7 +103,7 @@ def login(session):
             'isCommonIP': '',
         }
         res = session.post('https://ids.gzist.edu.cn/lyuapServer/login/twoVertify', headers=session.headers,
-                     json=json_data)
+                           json=json_data)
         print("二次验证响应：", res.json())
         # 二次登陆
         response = session.post('https://ids.gzist.edu.cn/lyuapServer/v1/tickets', data=data)
@@ -169,14 +160,15 @@ def doWork(session):
     global result
     try:
         result = response.json()['msg']
-        # logging.log(logging.INFO, '签到结果: ' + result)
         print('签到结果: ' + result)
         return result
-    except:
-        # logging.error('签到异常')
-        print('签到异常')
-        result = '查寝失败'
-        return result
+    except json.JSONDecodeError as e:
+        print(f'签到异常: JSON解析错误 - {e}')
+        print(f'服务器响应内容: {response.text if response.text else "空响应"}')
+        return '查寝失败'
+    except Exception as e:
+        print(f'签到异常: {e}')
+        return '查寝失败'
 
 
 def main():
